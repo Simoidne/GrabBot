@@ -134,7 +134,9 @@ async def on_message(message):
             "activated" if db["p_mode_status"][guild_id] else "not on"))
     
     if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
+        print("msg_contains_forbidden works")
         if db["p_mode_status"][guild_id]:
+            print("if statement for pmode works")
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
 
