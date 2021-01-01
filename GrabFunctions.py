@@ -13,5 +13,7 @@ def msg_contains_forbidden(msg: str, forbidden_words: List[str]) -> bool:
     regex = re.compile(regex_string)
 
     contains_forbidden = regex.search(msg)
+    if contains_forbidden:
+      return contains_forbidden
   
   return contains_forbidden

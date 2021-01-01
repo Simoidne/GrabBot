@@ -9,12 +9,13 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 client = discord.Client()
 
-forbidden_words = ["flower"]
+forbidden_words = ["flower", "league"]
 
-global p_mode_status
 forbidden_words_pMode = [
-    "not",
-    "no",
+    "not ",
+    "non",
+    "no ",
+    "noo"
     "bad",
     "garbage",
     "toxic",
@@ -38,12 +39,13 @@ forbidden_words_pMode = [
     "incorrect",
     "substandard",
     "never",
-    "nay",
+    "nay ",
     "forget it",
     "opposite",
     "refuse",
     "reject",
     "reverse",
+    "negative"
 ]
 
 
@@ -114,6 +116,7 @@ async def on_message(message):
 
 # Grab Positive Mode
     if msg.startswith("-grab pmode on"):
+        global p_mode_status
         p_mode_status = True
         await message.channel.send("Grab Bot Positive Mode is activated")
     
@@ -121,13 +124,14 @@ async def on_message(message):
         p_mode_status = False
         await message.channel.send("Grab Bot Positive Mode is now turned off")
 
-    if msg.startswith("-grab pmode-status") or msg.startswith("-grab pmode status"):
+    if msg.startswith("-grab pmode status"):
         await message.channel.send("Grab Bot Positive Mode is {}".format(
             "activated" if p_mode_status else "not on"))
     
-    # if grab.msg_contains_forbidden(msg, forbidden_words_pMode) and p_mode_status:
-    #     await message.delete()
-    #     await message.channel.send("Sorry this is a postive vibe server only")
+    if grab.msg_contains_forbidden(msg, forbidden_words_pMode):
+        if p_mode_status:
+            await message.delete()
+            await message.channel.send("Sorry this is a postive vibe server only")
 
 
 client.run(TOKEN)  # Start Bot using: py TheGrabBot.py
