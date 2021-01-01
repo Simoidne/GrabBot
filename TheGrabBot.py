@@ -9,7 +9,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 client = discord.Client()
 
-forbidden_words = ["flower", "flower id", "flow3r", "fl0wer", "fl0w3r"]
+forbidden_words = ["flower", "flower", "flow3r", "fl0wer", "fl0w3r"]
 
 @client.event
 async def on_ready():
@@ -22,24 +22,32 @@ async def on_message(message):
     
     msg = message.content
     warning_emoji = "🚩"
+    global s_level
 
     if msg.startswith("-grab test"):
         await message.channel.send("I am working")
     
 
+# Grab Bot Security Feature Against Flower ID propaganda
     if msg.startswith("-grab security"):
-        global s_level
-
-        if "l" in msg:
+        if "1" in msg:
             s_level = 1
             await message.channel.send("Security has been set to low")
-        elif "m" in msg:
+        elif "2" in msg:
             s_level = 2
             await message.channel.send("Security has been set to medium")
-        elif "h" in msg:
+        elif "3" in msg:
             s_level = 3
             await message.channel.send("Security has been set to high")
-
+        # If grab security is called without a number, it will show the current security level
+        else:
+            try:
+                s_level
+            except NameError:
+                s_level_set = False
+            else:
+                s_level_set = True
+            await message.channel.send("Security Level is: {}".format(str(s_level) if s_level_set else "Not Set"))
 
     if any(word in msg for word in forbidden_words):
         if s_level == 1:
