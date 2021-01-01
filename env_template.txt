@@ -1,0 +1,3 @@
+#This File serves as a template for your env file
+#Remove all before this
+DISCORD_TOKEN="Insert your dicord bot token"
