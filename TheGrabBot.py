@@ -20,10 +20,10 @@ db["p_mode_status"] = {"794345762275721246": False,
 # database for forbidden words
 db["forbidden_words"] = ["flower", "league"]
 db["forbidden_words_pMode"] = [
-    "not ",
+    "not",
     "non",
-    "no ",
-    "noo"
+    "no",
+    "noo",
     "bad",
     "garbage",
     "toxic",
@@ -47,7 +47,7 @@ db["forbidden_words_pMode"] = [
     "incorrect",
     "substandard",
     "never",
-    "nay ",
+    "nay",
     "forget it",
     "opposite",
     "refuse",
@@ -134,9 +134,7 @@ async def on_message(message):
             "activated" if db["p_mode_status"][guild_id] else "not on"))
     
     if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
-        print("msg_contains_forbidden works")
         if db["p_mode_status"][guild_id]:
-            print("if statement for pmode works")
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
 

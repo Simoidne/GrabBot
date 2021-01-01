@@ -11,7 +11,6 @@ def msg_contains_forbidden(msg: str, forbidden_words: List[str]) -> bool:
   for word in forbidden_words:
     regex_string = confusable_regex(word, include_character_padding=True)
     regex = re.compile(regex_string)
-
     contains_forbidden = regex.search(msg)
     if contains_forbidden:
       return contains_forbidden
