@@ -17,3 +17,11 @@ def msg_contains_forbidden(msg: str, forbidden_words: List[str]) -> bool:
       return contains_forbidden
   
   return contains_forbidden
+
+
+def update_database(dictionary: dict, guild_id: str, new_key) -> dict:
+  """Returns the new dictionary used to update the replit database"""
+
+  dictionary[guild_id] = new_key
+  print(dictionary)
+  return dictionary

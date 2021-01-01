@@ -2,6 +2,7 @@ import os
 import discord
 import GrabFunctions as grab
 from dotenv import load_dotenv
+from replit import db
 
 load_dotenv()
 
@@ -9,9 +10,16 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 client = discord.Client()
 
-forbidden_words = ["flower", "league"]
+# Replit Databases
+# database for global variables
+db["s_level"] = {"794345762275721246": 0,
+                "478352853887614986": 0}
+db["p_mode_status"] = {"794345762275721246": False,
+                      "478352853887614986": False}
 
-forbidden_words_pMode = [
+# database for forbidden words
+db["forbidden_words"] = ["flower", "league"]
+db["forbidden_words_pMode"] = [
     "not ",
     "non",
     "no ",
@@ -45,9 +53,9 @@ forbidden_words_pMode = [
     "refuse",
     "reject",
     "reverse",
-    "negative"
+    "negative",
+    "sucks"
 ]
-
 
 @client.event
 async def on_ready():
@@ -61,51 +69,49 @@ async def on_message(message):
 
     msg = message.content
     warning_emoji = "🚩"
-    global s_level
+    guild_id = str(message.guild.id)
+    #remove prints
+    print(db["s_level"][guild_id])
 
     if msg.startswith("-grab test"):
         await message.channel.send("I am working")
 
-
 # Grab Bot Security Feature Against Flower ID propaganda
     if msg.startswith("-grab security"):
         if "1" in msg:
-            s_level = 1
+            db["s_level"] = grab.update_database(db["s_level"], guild_id, 1)
             await message.channel.send("Security has been set to low")
+        
         elif "2" in msg:
-            s_level = 2
+            db["s_level"] = grab.update_database(db["s_level"], guild_id, 2)
             await message.channel.send("Security has been set to medium")
+
         elif "3" in msg:
-            s_level = 3
+            db["s_level"] = grab.update_database(db["s_level"], guild_id, 3)
             await message.channel.send("Security has been set to high")
+        
         # If -grab security is called without a number, it will show the
         # current security level
         else:
-            try:
-                s_level
-            except NameError:
-                s_level_set = False
-            else:
-                s_level_set = True
             await message.channel.send("Security Level is: {}".format(
-                str(s_level) if s_level_set else "Not Set"))
+                str(db["s_level"][guild_id]) if db["s_level"][guild_id] != 0 else "Not Set"))
 
-    if grab.msg_contains_forbidden(msg, forbidden_words):
-        if s_level == 1:
-            print("Low secure", s_level)
+    if grab.msg_contains_forbidden(msg, db["forbidden_words"]):
+        if db["s_level"][guild_id] == 1:
+            print("Low secure", db["s_level"][guild_id])
             await message.channel.send(
-                "Warning, content has been flag as inappropriate :octagonal_sign:"
+                "Warning, content has been flagged as inappropriate :octagonal_sign:"
             )
             await message.add_reaction(warning_emoji)
 
-        if s_level == 2:
-            print("M secure", s_level)
+        if db["s_level"][guild_id] == 2:
+            print("M secure", db["s_level"][guild_id])
             await message.delete()
             await message.channel.send(
                 "This has been censored by Grab Bot TM (pls sponsor me)")
 
-        if s_level == 3:
-            print("H secure", s_level)
+        if db["s_level"][guild_id] == 3:
+            print("H secure", db["s_level"][guild_id])
             await message.delete()
             await message.channel.send(
                 "We don't speak of the f word in this server! Muted.")
@@ -116,20 +122,19 @@ async def on_message(message):
 
 # Grab Positive Mode
     if msg.startswith("-grab pmode on"):
-        global p_mode_status
-        p_mode_status = True
+        db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, True)
         await message.channel.send("Grab Bot Positive Mode is activated")
     
     if msg.startswith("-grab pmode off"):
-        p_mode_status = False
+        db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, False)
         await message.channel.send("Grab Bot Positive Mode is now turned off")
 
     if msg.startswith("-grab pmode status"):
         await message.channel.send("Grab Bot Positive Mode is {}".format(
-            "activated" if p_mode_status else "not on"))
+            "activated" if db["p_mode_status"][guild_id] else "not on"))
     
-    if grab.msg_contains_forbidden(msg, forbidden_words_pMode):
-        if p_mode_status:
+    if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
+        if db["p_mode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
 
