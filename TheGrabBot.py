@@ -3,6 +3,7 @@ import discord
 import GrabFunctions as grab
 from dotenv import load_dotenv
 from replit import db
+from KeepAlive import keep_alive
 
 load_dotenv()
 
@@ -90,6 +91,9 @@ async def on_message(message):
             db["s_level"] = grab.update_database(db["s_level"], guild_id, 3)
             await message.channel.send("Security has been set to high")
         
+        elif "reset" in msg:
+            db["s_level"] = grab.update_database(db["s_level"], guild_id, 0)
+            await message.channel.send("Security has been turned off")
         # If -grab security is called without a number, it will show the
         # current security level
         else:
@@ -138,5 +142,5 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
 
-
+keep_alive()
 client.run(TOKEN)  # Start Bot using: py TheGrabBot.py

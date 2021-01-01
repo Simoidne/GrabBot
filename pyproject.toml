@@ -10,6 +10,7 @@ discord = "^1.0.1"
 python-dotenv = "^0.15.0"
 confusables = "^1.1.1"
 replit = "^2.0.0"
+flask = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
 
