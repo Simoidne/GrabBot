@@ -58,6 +58,21 @@ db["forbidden_words_pMode"] = [
     "sucks"
 ]
 
+def all_users_voice(list_voice_channel) -> list:
+    list_users = []
+    for voice_channel in list_voice_channel:
+        print(voice_channel.members)
+        list_users.extend(voice_channel.members)
+    return list_users
+        
+
+async def grab_user(list_users, channel) -> None:
+    for user in list_users:
+        try:
+            await user.move_to(channel)
+        except:
+            continue
+
 @client.event
 async def on_ready():
     print("We are ready")
@@ -71,8 +86,6 @@ async def on_message(message):
     msg = message.content
     warning_emoji = "🚩"
     guild_id = str(message.guild.id)
-    #remove prints
-    print(db["s_level"][guild_id])
 
     if msg.startswith("-grab test"):
         await message.channel.send("I am working")
@@ -141,6 +154,18 @@ async def on_message(message):
         if db["p_mode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
+    
+# Grab Feature
+    if msg.startswith("-grab user"):
+        if "[all]" in msg:
+            list_users = all_users_voice(message.guild.voice_channels)
+            voice_channel = message.author.voice.channel
+            await grab_user(list_users, voice_channel)
+
+        else:
+            list_users = message.mentions
+            voice_channel = message.author.voice.channel
+            await grab_user(list_users, voice_channel)
 
 keep_alive()
 client.run(TOKEN)  # Start Bot using: py TheGrabBot.py
