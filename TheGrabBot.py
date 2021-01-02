@@ -8,6 +8,17 @@ from KeepAlive import keep_alive
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
+HELP_MSG = """Commands for Grab Bot include:
+              -grab test           (to check if the bot is running)
+              -grab security       (to check the security level)
+              -grab security [int] (set security to: 1-low, 2-med, 3-high 0-reset)
+              -grab pmode on       (turn postive mode on)
+              -grab pmode off      (turn postive mode off)
+              -grab pmode status   (check the state of the pmode)
+              -grab user @user     (grab user into your voice channel)
+              -grab user [all]     (grab all users in call into your voice channel)
+              Github: (https://github.com/Simoidne/GrabBot)
+            """
 
 # Set intents.member to true
 intents = discord.Intents.default()
@@ -65,11 +76,8 @@ db["forbidden_words_pMode"] = [
 def all_users_voice(list_voice_channel) -> list:
     list_users = []
     for voice_channel in list_voice_channel:
-        print(voice_channel)
-        print(voice_channel.members)
         list_users.extend(voice_channel.members)
-    return list_users
-        
+    return list_users       
 
 async def grab_user(list_users, channel) -> None:
     for user in list_users:
@@ -78,9 +86,12 @@ async def grab_user(list_users, channel) -> None:
         except:
             continue
 
+
 @client.event
 async def on_ready():
     print("We are ready")
+    game = discord.Game("use '-grab help'")
+    await client.change_presence(status=discord.Status.idle, activity=game)
 
 
 @client.event
@@ -94,6 +105,9 @@ async def on_message(message):
 
     if msg.startswith("-grab test"):
         await message.channel.send("I am working")
+    
+    if msg.startswith("-grab help"):
+        await message.channel.send(HELP_MSG)
 
 # Grab Bot Security Feature Against Flower ID propaganda
     if msg.startswith("-grab security"):
