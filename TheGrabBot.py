@@ -9,7 +9,11 @@ load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+# Set intents.member to true
+intents = discord.Intents.default()
+intents.members = True
+
+client = discord.Client(intents=intents)
 
 # Replit Databases
 # database for global variables
