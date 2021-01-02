@@ -61,6 +61,7 @@ db["forbidden_words_pMode"] = [
 def all_users_voice(list_voice_channel) -> list:
     list_users = []
     for voice_channel in list_voice_channel:
+        print(voice_channel)
         print(voice_channel.members)
         list_users.extend(voice_channel.members)
     return list_users
@@ -155,7 +156,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
     
-# Grab Feature
+# Grab Bot Grab Feature
     if msg.startswith("-grab user"):
         if "[all]" in msg:
             list_users = all_users_voice(message.guild.voice_channels)
