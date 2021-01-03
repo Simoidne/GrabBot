@@ -1,9 +1,13 @@
 import os
 import discord
 import GrabFunctions as grab
+import requests
+import json
+from typing import List
 from dotenv import load_dotenv
 from replit import db
 from KeepAlive import keep_alive
+from better_profanity import profanity
 
 load_dotenv()
 
@@ -78,6 +82,14 @@ db["forbidden_words_pMode"] = [
 db["user_mute_list"] = {}
 
 # Helper Functions
+def create_random_words() -> List[str]:
+    """Creates a list of random words from a random word API"""
+
+    random_words = requests.get("https://random-word-api.herokuapp.com/home?/word?number=10")
+    print("This is random_words: ", random_words.json())
+    return ['']
+
+
 def all_users_voice(list_voice_channel: list) -> list:
     """Returns a list of users connected to any of the voice channels in
     list_voice_channel
@@ -158,6 +170,7 @@ async def on_message(message):
         return
 
     if msg.startswith("-grab test"):
+        create_random_words()
         await message.channel.send("I am working")
 
     if msg.startswith("-grab need admin"):
@@ -238,6 +251,11 @@ async def on_message(message):
             "activated" if db["p_mode_status"][guild_id] else "not on"))
     
     if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
+        if db["p_mode_status"][guild_id]:
+            await message.delete()
+            await message.channel.send("Sorry this is a postive vibe server only")
+    
+    if profanity.contains_profanity(msg):
         if db["p_mode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
