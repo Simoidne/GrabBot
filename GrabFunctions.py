@@ -18,9 +18,9 @@ def msg_contains_forbidden(msg: str, forbidden_words: List[str]) -> bool:
   return contains_forbidden
 
 
-def update_database(dictionary: dict, guild_id: str, new_key) -> dict:
+def update_database(dictionary: dict, guild_id: str, new_value) -> dict:
   """Returns the new dictionary used to update the replit database"""
 
-  dictionary[guild_id] = new_key
+  dictionary[guild_id] = new_value
   print(dictionary)
   return dictionary

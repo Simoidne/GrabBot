@@ -9,6 +9,8 @@ load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 HELP_MSG = """Commands for Grab Bot include:
+              -grab need admin     (turn on admin mode, only admins can turn this on)
+              -grab need admin off (turn off admin mode, admin mode is default to off)
               -grab test           (to check if the bot is running)
               -grab security       (to check the security level)
               -grab security [int] (set security to: 1-low, 2-med, 3-high 0-reset)
@@ -25,13 +27,11 @@ intents = discord.Intents.default()
 intents.members = True
 
 client = discord.Client(intents=intents)
-
 # Replit Databases
 # database for global variables
-db["s_level"] = {"794345762275721246": 0,
-                "478352853887614986": 0}
-db["p_mode_status"] = {"794345762275721246": False,
-                      "478352853887614986": False}
+db["s_level"] = {}
+db["p_mode_status"] = {}
+db["need_admin"] = {}
 
 # database for forbidden words
 db["forbidden_words"] = ["flower", "league"]
@@ -70,16 +70,37 @@ db["forbidden_words_pMode"] = [
     "reject",
     "reverse",
     "negative",
-    "sucks"
+    "sucks",
+    "wrong"
 ]
 
-def all_users_voice(list_voice_channel) -> list:
+# database for users muted by bot (Used to unmute users once security is reset)
+db["user_mute_list"] = {}
+
+# Helper Functions
+def all_users_voice(list_voice_channel: list) -> list:
+    """Returns a list of users connected to any of the voice channels in
+    list_voice_channel
+    """
+    
     list_users = []
     for voice_channel in list_voice_channel:
         list_users.extend(voice_channel.members)
-    return list_users       
+    return list_users
 
-async def grab_user(list_users, channel) -> None:
+
+def add_new_guild(guild_id: str) -> None:
+    """Initializes a guild into the database"""
+    
+    db["s_level"] = grab.update_database(db["s_level"], guild_id, 0)
+    db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, False)
+    db["user_mute_list"] = grab.update_database(db["user_mute_list"], guild_id, [])
+    db["need_admin"] = grab.update_database(db["need_admin"],guild_id, False)
+
+
+async def grab_user(list_users: list, channel) -> None:
+    """Moves a user connected to voice to a specified channel"""
+    
     for user in list_users:
         try:
             await user.move_to(channel)
@@ -87,11 +108,32 @@ async def grab_user(list_users, channel) -> None:
             continue
 
 
+async def unmute_users(dictionary: dict, guild_id, guild) -> None:
+    """Takes in dictionary from db["user_mute_list"] and finds the 
+    corresponding list of users through the guild_id. Unmutes all users 
+    in the list if they are connected to voice, otherwise will storage
+    user back into the muted user list for the guild.
+    """
+    
+    list_users = dictionary[guild_id]
+    new_list = []
+    for user_id in list_users:
+        user = guild.get_member(user_id)
+        try:
+            if user.voice.mute:
+                await user.edit(mute=False)
+        except:
+            new_list.append(user_id)
+    db["user_mute_list"] = grab.update_database(db["user_mute_list"], guild_id, new_list)
+
+
+
+# The Bot
 @client.event
 async def on_ready():
     print("We are ready")
     game = discord.Game("use '-grab help'")
-    await client.change_presence(status=discord.Status.idle, activity=game)
+    await client.change_presence(status=discord.Status.online, activity=game)
 
 
 @client.event
@@ -99,15 +141,35 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    is_admin = message.author.guild_permissions.administrator
     msg = message.content
     warning_emoji = "🚩"
     guild_id = str(message.guild.id)
 
-    if msg.startswith("-grab test"):
-        await message.channel.send("I am working")
-    
+    if guild_id not in db["s_level"]:
+        add_new_guild(guild_id)
+
     if msg.startswith("-grab help"):
         await message.channel.send(HELP_MSG)
+
+    if db["need_admin"][guild_id] and not is_admin:
+        if msg.startswith("-grab "):
+            await message.channel.send("Admin perms are required to use Grab Bot. Ask your server admin to give access to Grab Bot.")
+        return
+
+    if msg.startswith("-grab test"):
+        await message.channel.send("I am working")
+
+    if msg.startswith("-grab need admin"):
+        if "off" in msg:
+            db["need_admin"] = grab.update_database(db["need_admin"], guild_id, False)
+            await message.channel.send("Everyone is now able to use Grab Bot")
+        elif is_admin:
+            db["need_admin"] = grab.update_database(db["need_admin"], guild_id, True)
+            await message.channel.send("Admin perms are now required to use Grab Bot")
+        else:
+            await message.channel.send("Admin perms are needed to turn on 'need admin'")
+    
 
 # Grab Bot Security Feature Against Flower ID propaganda
     if msg.startswith("-grab security"):
@@ -123,9 +185,12 @@ async def on_message(message):
             db["s_level"] = grab.update_database(db["s_level"], guild_id, 3)
             await message.channel.send("Security has been set to high")
         
-        elif "reset" in msg:
+        elif "0" in msg:
             db["s_level"] = grab.update_database(db["s_level"], guild_id, 0)
             await message.channel.send("Security has been turned off")
+            await unmute_users(db["user_mute_list"], guild_id, message.guild)
+
+
         # If -grab security is called without a number, it will show the
         # current security level
         else:
@@ -144,15 +209,18 @@ async def on_message(message):
             print("M secure", db["s_level"][guild_id])
             await message.delete()
             await message.channel.send(
-                "This has been censored by Grab Bot TM (pls sponsor me)")
+                "This has been censored by Grab Bot TM")
 
         if db["s_level"][guild_id] == 3:
             print("H secure", db["s_level"][guild_id])
             await message.delete()
             await message.channel.send(
-                "We don't speak of the f word in this server! Muted.")
+                "The content has been deemed dangerous. Muted.")
             try:
                 await message.author.edit(mute=True)
+                new_user_list = db["user_mute_list"][guild_id]
+                new_user_list.append(message.author.id)
+                db["user_mute_list"] = grab.update_database(db["user_mute_list"], guild_id, new_user_list)
             except:
                 print("User not connected to voice")
 
