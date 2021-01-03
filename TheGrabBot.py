@@ -2,19 +2,19 @@ import os
 import discord
 import GrabFunctions as grab
 import requests
-import json
+# import json
 from typing import List
 from dotenv import load_dotenv
 from replit import db
 from KeepAlive import keep_alive
 from better_profanity import profanity
-from tabulate import tabulate
+# from tabulate import tabulate
 
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-HELP_MSG = """Commands for Grab Bot include:
+HELP_MSG = """```Commands for Grab Bot include:
               -grab need admin on  (turn on admin mode, only admins can turn this on)
               -grab need admin off (turn off admin mode, admin mode is default to off)
               -grab test           (to check if the bot is running)
@@ -26,37 +26,37 @@ HELP_MSG = """Commands for Grab Bot include:
               -grab user @user     (grab user into your voice channel)
               -grab user [all]     (grab all users in call into your voice channel)
               Github: (https://github.com/Simoidne/GrabBot)
-            """
+            ```"""
 
 # prolly should move to own seperate file for more modulatiry
-def help_function() -> str:
-    commands = ['-grab need admin on',
-                '-grab need admin off',
-                '-grab test',
-                '-grab security',
-                '-grab security [int]',
-                '-grab pmode on',
-                '-grab pmode off',
-                '-grab pmode status',
-                '-grab user @user',
-                '-grab user [all]']
+# def help_function() -> str:
+#     commands = ['-grab need admin on',
+#                 '-grab need admin off',
+#                 '-grab test',
+#                 '-grab security',
+#                 '-grab security [int]',
+#                 '-grab pmode on',
+#                 '-grab pmode off',
+#                 '-grab pmode status',
+#                 '-grab user @user',
+#                 '-grab user [all]']
     
-    # the respective functions of the above commands
-    functions = ['turn on admin mode, only admins can turn this on',
-                 'turn off admin mode, admin mode is default to off',
-                 'to check if the bot is running',
-                 'to check the security level',
-                 'set security to: 1-low, 2-med, 3-high 0-reset',
-                 'turn postive mode on',
-                 'turn postive mode off',
-                 'check the state of the pmode',
-                 'grab user into your voice channel',
-                 'grab all users in call into your voice channel']
+#     # the respective functions of the above commands
+#     functions = ['turn on admin mode, only admins can turn this on',
+#                  'turn off admin mode, admin mode is default to off',
+#                  'to check if the bot is running',
+#                  'to check the security level',
+#                  'set security to: 1-low, 2-med, 3-high 0-reset',
+#                  'turn postive mode on',
+#                  'turn postive mode off',
+#                  'check the state of the pmode',
+#                  'grab user into your voice channel',
+#                  'grab all users in call into your voice channel']
     
-    table = { "Commands": commands, "Functions": functions }
-    return tabulate(table, tablefmt="github", stralign="left", headers="keys")
+#     table = { "Commands": commands, "Functions": functions }
+#     return tabulate(table, tablefmt="github", stralign="left", headers="keys")
     
-HELP_MSG = help_function()
+# HELP_MSG = help_function()
 
 
 # Set intents.member to true
@@ -195,7 +195,7 @@ async def on_message(message):
         add_new_guild(guild_id)
 
     if msg.startswith("-grab help"):
-        await message.channel.send("```" + HELP_MSG + "```")
+        await message.channel.send(HELP_MSG)
 
     if db["need_admin"][guild_id] and not is_admin:
         if msg.startswith("-grab "):
