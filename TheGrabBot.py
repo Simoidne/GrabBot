@@ -9,7 +9,7 @@ load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 HELP_MSG = """Commands for Grab Bot include:
-              -grab need admin     (turn on admin mode, only admins can turn this on)
+              -grab need admin on  (turn on admin mode, only admins can turn this on)
               -grab need admin off (turn off admin mode, admin mode is default to off)
               -grab test           (to check if the bot is running)
               -grab security       (to check the security level)
