@@ -195,7 +195,7 @@ async def on_message(message):
         add_new_guild(guild_id)
 
     if msg.startswith("-grab help"):
-        await message.channel.send(HELP_MSG)
+        await message.channel.send("```" + HELP_MSG + "```")
 
     if db["need_admin"][guild_id] and not is_admin:
         if msg.startswith("-grab "):
