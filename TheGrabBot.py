@@ -42,10 +42,10 @@ db["need_admin"] = {}
 db["user_mute_list"] = {} #users muted by bot (used to unmute once security is reset)
 
 # database for forbidden words
-def get_forbidden_words_pMode_database():
-    forbidden_words_pMode = []
+def get_forbidden_words_pmode_database():
+    forbidden_words_pmode = []
     with open("forbidden_words_pMode.txt") as file:
-        forbidden_words_pMode = [word.strip().lower() for word in file.readlines()]
+        forbidden_words_pmode = [word.strip().lower() for word in file.readlines()]
         
     return forbidden_words_pMode
   
@@ -56,7 +56,7 @@ def get_forbidden_words_database():
       
     return forbidden_words
 
-db["forbidden_words_pMode"] = get_forbidden_words_pMode_database()
+db["forbidden_words_pmode"] = get_forbidden_words_pmode_database()
 db["forbidden_words"] = get_forbidden_words_database()
 
 
@@ -84,7 +84,7 @@ def add_new_guild(guild_id: str) -> None:
     """Initializes a guild into the database"""
     
     db["s_level"] = grab.update_database(db["s_level"], guild_id, 0)
-    db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, False)
+    db["pmode_status"] = grab.update_database(db["pmode_status"], guild_id, False)
     db["user_mute_list"] = grab.update_database(db["user_mute_list"], guild_id, [])
     db["need_admin"] = grab.update_database(db["need_admin"],guild_id, False)
 
@@ -218,24 +218,24 @@ async def on_message(message):
 
 # Grab Positive Mode
     if msg.startswith("-grab pmode on"):
-        db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, True)
+        db["pmode_status"] = grab.update_database(db["pmode_status"], guild_id, True)
         await message.channel.send("Grab Bot Positive Mode is activated")
     
     if msg.startswith("-grab pmode off"):
-        db["p_mode_status"] = grab.update_database(db["p_mode_status"], guild_id, False)
+        db["pmode_status"] = grab.update_database(db["pmode_status"], guild_id, False)
         await message.channel.send("Grab Bot Positive Mode is now turned off")
 
     if msg.startswith("-grab pmode status"):
         await message.channel.send("Grab Bot Positive Mode is {}".format(
-            "activated" if db["p_mode_status"][guild_id] else "not on"))
+            "activated" if db["pmode_status"][guild_id] else "not on"))
     
     if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
-        if db["p_mode_status"][guild_id]:
+        if db["pmode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
     
     if profanity.contains_profanity(msg):
-        if db["p_mode_status"][guild_id]:
+        if db["pmode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
     
