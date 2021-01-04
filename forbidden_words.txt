@@ -4,3 +4,4 @@ flowerid
 hl
 kick
 ban
+mute
