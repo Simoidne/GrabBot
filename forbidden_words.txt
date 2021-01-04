@@ -2,3 +2,5 @@ league
 flower
 flowerid
 hl
+kick
+ban
