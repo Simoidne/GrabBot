@@ -1,4 +1,5 @@
 league
+clash
 flower
 flowerid
 hl
