@@ -40,45 +40,54 @@ db["p_mode_status"] = {}
 db["need_admin"] = {}
 
 # database for forbidden words
+def get_forbidden_words_pMode_database():
+    forbidden_words = []
+    with open("forbidden_words.txt") as file:
+        forbidden_words = [word.strip().lower() for word in file.readlines()]
+        
+    return forbidden_words
+
+db["forbidden_words_pMode"] = get_forbidden_words_pMode_database()
+
 db["forbidden_words"] = ["flower", "league"]
-db["forbidden_words_pMode"] = [
-    "not",
-    "non",
-    "no",
-    "noo",
-    "bad",
-    "garbage",
-    "toxic",
-    "terrible",
-    "atrocious",
-    "awful",
-    "crummy",
-    "dreadful",
-    "lousy",
-    "blah",
-    "poor",
-    "rough",
-    "sad",
-    "gross",
-    "imperfect",
-    "inferior",
-    "crappy",
-    "crap",
-    "dissatisfactory",
-    "inadequate",
-    "incorrect",
-    "substandard",
-    "never",
-    "nay",
-    "forget it",
-    "opposite",
-    "refuse",
-    "reject",
-    "reverse",
-    "negative",
-    "sucks",
-    "wrong"
-]
+# db["forbidden_words_pMode"] = [
+#     "not",
+#     "non",
+#     "no",
+#     "noo",
+#     "bad",
+#     "garbage",
+#     "toxic",
+#     "terrible",
+#     "atrocious",
+#     "awful",
+#     "crummy",
+#     "dreadful",
+#     "lousy",
+#     "blah",
+#     "poor",
+#     "rough",
+#     "sad",
+#     "gross",
+#     "imperfect",
+#     "inferior",
+#     "crappy",
+#     "crap",
+#     "dissatisfactory",
+#     "inadequate",
+#     "incorrect",
+#     "substandard",
+#     "never",
+#     "nay",
+#     "forget it",
+#     "opposite",
+#     "refuse",
+#     "reject",
+#     "reverse",
+#     "negative",
+#     "sucks",
+#     "wrong"
+# ]
 
 # database for users muted by bot (Used to unmute users once security is reset)
 db["user_mute_list"] = {}
