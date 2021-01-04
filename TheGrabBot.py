@@ -43,14 +43,21 @@ db["user_mute_list"] = {} #users muted by bot (used to unmute once security is r
 
 # database for forbidden words
 def get_forbidden_words_pMode_database():
+    forbidden_words_pMode = []
+    with open("forbidden_words_pMode.txt") as file:
+        forbidden_words_pMode = [word.strip().lower() for word in file.readlines()]
+        
+    return forbidden_words_pMode
+  
+def get_forbidden_words_database():
     forbidden_words = []
     with open("forbidden_words.txt") as file:
         forbidden_words = [word.strip().lower() for word in file.readlines()]
-        
+      
     return forbidden_words
 
 db["forbidden_words_pMode"] = get_forbidden_words_pMode_database()
-db["forbidden_words"] = ["flower", "league"]
+db["forbidden_words"] = get_forbidden_words_database()
 
 
 # Helper Functions
