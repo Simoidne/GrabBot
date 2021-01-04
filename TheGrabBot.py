@@ -33,11 +33,13 @@ intents = discord.Intents.default()
 intents.members = True
 
 client = discord.Client(intents=intents)
+
 # Replit Databases
 # database for global variables
 db["s_level"] = {}
 db["p_mode_status"] = {}
 db["need_admin"] = {}
+db["user_mute_list"] = {} #users muted by bot (used to unmute once security is reset)
 
 # database for forbidden words
 def get_forbidden_words_pMode_database():
@@ -48,49 +50,8 @@ def get_forbidden_words_pMode_database():
     return forbidden_words
 
 db["forbidden_words_pMode"] = get_forbidden_words_pMode_database()
-
 db["forbidden_words"] = ["flower", "league"]
-# db["forbidden_words_pMode"] = [
-#     "not",
-#     "non",
-#     "no",
-#     "noo",
-#     "bad",
-#     "garbage",
-#     "toxic",
-#     "terrible",
-#     "atrocious",
-#     "awful",
-#     "crummy",
-#     "dreadful",
-#     "lousy",
-#     "blah",
-#     "poor",
-#     "rough",
-#     "sad",
-#     "gross",
-#     "imperfect",
-#     "inferior",
-#     "crappy",
-#     "crap",
-#     "dissatisfactory",
-#     "inadequate",
-#     "incorrect",
-#     "substandard",
-#     "never",
-#     "nay",
-#     "forget it",
-#     "opposite",
-#     "refuse",
-#     "reject",
-#     "reverse",
-#     "negative",
-#     "sucks",
-#     "wrong"
-# ]
 
-# database for users muted by bot (Used to unmute users once security is reset)
-db["user_mute_list"] = {}
 
 # Helper Functions
 def create_random_words() -> List[str]:
