@@ -37,17 +37,17 @@ client = discord.Client(intents=intents)
 # Replit Databases
 # database for global variables
 db["s_level"] = {}
-db["p_mode_status"] = {}
+db["pmode_status"] = {}
 db["need_admin"] = {}
 db["user_mute_list"] = {} #users muted by bot (used to unmute once security is reset)
 
 # database for forbidden words
 def get_forbidden_words_pmode_database():
     forbidden_words_pmode = []
-    with open("forbidden_words_pMode.txt") as file:
+    with open("forbidden_words_pmode.txt") as file:
         forbidden_words_pmode = [word.strip().lower() for word in file.readlines()]
         
-    return forbidden_words_pMode
+    return forbidden_words_pmode
   
 def get_forbidden_words_database():
     forbidden_words = []
@@ -229,7 +229,7 @@ async def on_message(message):
         await message.channel.send("Grab Bot Positive Mode is {}".format(
             "activated" if db["pmode_status"][guild_id] else "not on"))
     
-    if grab.msg_contains_forbidden(msg, db["forbidden_words_pMode"]):
+    if grab.msg_contains_forbidden(msg, db["forbidden_words_pmode"]):
         if db["pmode_status"][guild_id]:
             await message.delete()
             await message.channel.send("Sorry this is a postive vibe server only")
