@@ -1,4 +1,6 @@
 league
+legue
+LoL
 clash
 flower
 flowerid
